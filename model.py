@@ -51,11 +51,5 @@ class WS_Winners(Base):
 
 
 
-
-
-
-
-
-
-engine = creat_engine('sqlite///:///dbname', echo = True)
-Base.metadata.creat_all(engine)
+#engine = create_engine('sqlite///:///mlb_stats.db', echo = True)
+#Base.metadata.create_all(engine)
