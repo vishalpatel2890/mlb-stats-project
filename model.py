@@ -46,6 +46,7 @@ class Defensive_Stats(Base):
 class WS_Winners(Base):
     __tablename__="ws_winners"
     id = Column(Integer, primary_key=True)
+    name = Column(Text)
     year = Column(Integer)
     team_id = Column(Integer, ForeignKey('teams.id'))
     team = relationship('Team', back_populates="ws_winners")
