@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+from model import *
 
 
 class TeamStatsBuilder:
@@ -11,40 +12,43 @@ class TeamStatsBuilder:
         statParser = StatParser()
         teams = []
         for team in ts.teamList():
+            new_team_instance = None
             teamName = teamParser.team_name(team)
+            # create Team Instance
             if teamName:
-                # create Team Instance
-                new_team_instance = teamName
-                teams.append(new_team_instance)
-                # get pitching/batting data
+                new_team_instance = Team(name=teamName)
+            # url for offese/defense data
+            if new_team_instance:
                 url = teamParser.team_url(team)
 
-                for row in ss.battingHTML(url)[0:2]:
-                    league = statParser.league(row)
-                    if league:
-                        division = statParser.division(row)
-                        year = statParser.year(row)
-                        wins = statParser.wins(row)
-                        runs_scored = statParser.runs_scored(row)
-                        home_runs = statParser.home_runs(row)
-                        batting_average = statParser.batting_average(row)
-                        ops = statParser.ops(row)
-                        avg_age = statParser.avg_age(row)
-
-                for row in ss.pitchingHTML(url)[1:3]:
+            for row in ss.battingHTML(url)[0:2]:
+                league = statParser.league(row)
+                if league:
+                    division = statParser.division(row)
                     year = statParser.year(row)
-                    if year:
-                        print(year)
-                        losses = statParser.losses(row)
-                        runs_allowed = statParser.runs_allowed(row)
-                        era = statParser.era(row)
-                        earned_runs = statParser.earned_runs(row)
-                        strikeouts = statParser.strikeouts(row)
-                        fielding_percent = statParser.fielding_percent(row)
-                        avg_age = statParser.avg_age_picther(row)
-                        pitching = Defensive_Stats()
-                        pitching.team = team_instance
-                        print(year, losses, runs_allowed, era, earned_runs, strikeouts, fielding_percent, avg_age)
+                    wins = statParser.wins(row)
+                    runs_scored = statParser.runs_scored(row)
+                    home_runs = statParser.home_runs(row)
+                    batting_avg = statParser.batting_average(row)
+                    ops = statParser.ops(row)
+                    avg_age = statParser.avg_age(row)
+                    offensive_stats_instance = Offensive_Stats(league=league, division=division, year=year, wins=wins, runs_scored=runs_scored, home_runs=home_runs, batting_avg=batting_avg, ops=ops, avg_age=avg_age)
+                    offensive_stats_instance.team = new_team_instance
+            for row in ss.pitchingHTML(url)[1:3]:
+                year = statParser.year(row)
+                if year:
+                    print(year)
+                    losses = statParser.losses(row)
+                    runs_allowed = statParser.runs_allowed(row)
+                    era = statParser.era(row)
+                    earned_runs = statParser.earned_runs(row)
+                    strikeouts = statParser.strikeouts(row)
+                    field_percent = statParser.fielding_percent(row)
+                    avg_age = statParser.avg_age_picther(row)
+                    defensive_stats_instance = Defensive_Stats(year=year, losses=losses, runs_allowed=runs_allowed, era=era, earned_runs=earned_runs, strikeouts=strikeouts, field_percent=field_percent)
+                    defensive_stats_instance.team = new_team_instance
+            if new_team_instance:
+                teams.append(new_team_instance)
         return teams
 
 
@@ -78,9 +82,11 @@ class StatsScraper:
 
 class TeamParser:
     def team_name(self, html):
-        teamNameElement = html.find('td', {'data-stat': 'franchise_name'})
-        if teamNameElement:
-            return teamNameElement
+        try:
+            teamNameElement = html.find('td', {'data-stat': 'franchise_name'}).findNext()
+        except:
+            teamNameElement = None
+        return teamNameElement.text
 
     def team_url(self, html):
         teamURLElement = html.find('td', {'data-stat': 'franchise_name'}).findNext()
