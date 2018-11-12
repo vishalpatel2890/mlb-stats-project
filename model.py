@@ -5,8 +5,9 @@ from sqlalchemy.orm import relationship, sessionmaker
 
 Base = declarative_base()
 
+
 class Team(Base):
-    __tablename__='teams'
+    __tablename__ = 'teams'
     id = Column(Integer, primary_key=True)
     name = Column(Text)
     offensive_stats = relationship('Offensive_Stats', back_populates='team')
@@ -15,7 +16,7 @@ class Team(Base):
 
 
 class Offensive_Stats(Base):
-    __tablename__='offensive_stats'
+    __tablename__ = 'offensive_stats'
     id = Column(Integer, primary_key=True)
     team_id = Column(Integer, ForeignKey('teams.id'))
     league = Column(Text)
@@ -31,7 +32,7 @@ class Offensive_Stats(Base):
 
 
 class Defensive_Stats(Base):
-    __tablename__='defensive_stats'
+    __tablename__ = 'defensive_stats'
     id = Column(Integer, primary_key=True)
     team_id = Column(Integer, ForeignKey('teams.id'))
     year = Column(Integer)
@@ -39,12 +40,13 @@ class Defensive_Stats(Base):
     runs_allowed = Column(Integer)
     earned_runs = Column(Integer)
     era = Column(Float)
-    strikeouts =  Column(Integer)
+    strikeouts = Column(Integer)
     field_percent = Column(Float)
     team = relationship('Team', back_populates='defensive_stats')
 
+
 class WS_Winners(Base):
-    __tablename__="ws_winners"
+    __tablename__ = "ws_winners"
     id = Column(Integer, primary_key=True)
     name = Column(Text)
     year = Column(Integer)
@@ -52,6 +54,5 @@ class WS_Winners(Base):
     team = relationship('Team', back_populates="ws_winners")
 
 
-
 #engine = create_engine('sqlite///:///mlb_stats.db', echo = True)
-#Base.metadata.create_all(engine)
+# Base.metadata.create_all(engine)

@@ -11,7 +11,7 @@ class TeamStatsBuilder:
         teamParser = TeamParser()
         statParser = StatParser()
         teams = []
-        for team in ts.teamList()[0:2]:
+        for team in ts.teamList():
             teamName = teamParser.team_name(team)
             if teamName:
                 # create Team Instance
@@ -43,7 +43,8 @@ class TeamStatsBuilder:
                         strikeouts = statParser.strikeouts(row)
                         fielding_percent = statParser.fielding_percent(row)
                         avg_age = statParser.avg_age_picther(row)
-
+                        pitching = Defensive_Stats()
+                        pitching.team = team_instance
                         print(year, losses, runs_allowed, era, earned_runs, strikeouts, fielding_percent, avg_age)
         return teams
 
