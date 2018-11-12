@@ -1,6 +1,17 @@
 import requests
 from bs4 import BeautifulSoup
+
+from model import *
 import re
+from sqlalchemy.orm import sessionmaker
+import sqlalchemy
+
+engine = sqlalchemy.create_engine('sqlite:///baseball.db', echo=True)
+
+Base.metadata.create_all(engine)
+
+Session = sessionmaker(bind=engine)
+session = Session()
 
 
 class TeamStatsBuilder:
@@ -12,40 +23,43 @@ class TeamStatsBuilder:
         statParser = StatParser()
         teams = []
         for team in ts.teamList():
+            new_team_instance = None
             teamName = teamParser.team_name(team)
+            # create Team Instance
             if teamName:
-                # create Team Instance
-                new_team_instance = teamName
-                teams.append(new_team_instance)
-                # get pitching/batting data
+                new_team_instance = Team(name=teamName)
+            # url for offese/defense data
+            if new_team_instance:
                 url = teamParser.team_url(team)
 
-                for row in ss.battingHTML(url)[0:2]:
-                    league = statParser.league(row)
-                    if league:
-                        division = statParser.division(row)
-                        year = statParser.year(row)
-                        wins = statParser.wins(row)
-                        runs_scored = statParser.runs_scored(row)
-                        home_runs = statParser.home_runs(row)
-                        batting_average = statParser.batting_average(row)
-                        ops = statParser.ops(row)
-                        avg_age = statParser.avg_age(row)
-
-                for row in ss.pitchingHTML(url)[1:3]:
+            for row in ss.battingHTML(url)[0:]:
+                league = statParser.league(row)
+                if league:
+                    division = statParser.division(row)
                     year = statParser.year(row)
-                    if year:
-                        print(year)
-                        losses = statParser.losses(row)
-                        runs_allowed = statParser.runs_allowed(row)
-                        era = statParser.era(row)
-                        earned_runs = statParser.earned_runs(row)
-                        strikeouts = statParser.strikeouts(row)
-                        fielding_percent = statParser.fielding_percent(row)
-                        avg_age = statParser.avg_age_picther(row)
-                        pitching = Defensive_Stats()
-                        pitching.team = team_instance
-                        print(year, losses, runs_allowed, era, earned_runs, strikeouts, fielding_percent, avg_age)
+                    wins = statParser.wins(row)
+                    runs_scored = statParser.runs_scored(row)
+                    home_runs = statParser.home_runs(row)
+                    batting_avg = statParser.batting_average(row)
+                    ops = statParser.ops(row)
+                    avg_age = statParser.avg_age(row)
+                    offensive_stats_instance = Offensive_Stats(league=league, division=division, year=year, wins=wins, runs_scored=runs_scored, home_runs=home_runs, batting_avg=batting_avg, ops=ops, avg_age=avg_age)
+                    offensive_stats_instance.team = new_team_instance
+            for row in ss.pitchingHTML(url)[1:]:
+                year = statParser.year(row)
+                if year:
+                    print(year)
+                    losses = statParser.losses(row)
+                    runs_allowed = statParser.runs_allowed(row)
+                    era = statParser.era(row)
+                    earned_runs = statParser.earned_runs(row)
+                    strikeouts = statParser.strikeouts(row)
+                    field_percent = statParser.fielding_percent(row)
+                    avg_age = statParser.avg_age_picther(row)
+                    defensive_stats_instance = Defensive_Stats(year=year, losses=losses, runs_allowed=runs_allowed, era=era, earned_runs=earned_runs, strikeouts=strikeouts, field_percent=field_percent)
+                    defensive_stats_instance.team = new_team_instance
+            if new_team_instance:
+                teams.append(new_team_instance)
         return teams
 
 class WSStatsBuilder:
@@ -57,6 +71,17 @@ class WSStatsBuilder:
             wswins.append(ws_instance)
         return wswins
 
+
+
+class WSStatsBuilder:
+    def run(self):
+        wswins = []
+        wsParser = WSParser()
+        for team in wsParser.zip():
+            team_obj = session.query(Team).filter(Team.name.like(f"%{team[0]}%")).first()
+            ws_instance = WS_Winners(year=team[1], name=team[0], team=team_obj)
+            wswins.append(ws_instance)
+        return wswins
 
 
 class TeamScraper:
@@ -99,11 +124,26 @@ class WSScraper:
 
 
 
+class WSScraper:
+    def ws_winners(self):
+        ws_team_request = requests.get('https://www.topendsports.com/events/baseball-world-series/winning-teams.htm')
+        soup = BeautifulSoup(ws_team_request.content, 'html.parser')
+        return soup.findAll('td')[571:: -5]
+
+    def ws_years(self):
+        ws_year_request = requests.get('https://en.wikipedia.org/wiki/List_of_World_Series_champions')
+        soup = BeautifulSoup(ws_year_request.content, 'html.parser')
+        return soup.findAll('th', {'scope': 'row'})
+
+
 class TeamParser:
     def team_name(self, html):
-        teamNameElement = html.find('td', {'data-stat': 'franchise_name'})
+        try:
+            teamNameElement = html.find('td', {'data-stat': 'franchise_name'}).findNext()
+        except:
+            teamNameElement = None
         if teamNameElement:
-            return teamNameElement
+            return teamNameElement.text
 
     def team_url(self, html):
         teamURLElement = html.find('td', {'data-stat': 'franchise_name'}).findNext()
@@ -114,7 +154,7 @@ class StatParser:
     def league(self, html):
         leagueElement = html.find('td', {'data-stat': 'lg_ID'})
         if leagueElement:
-            return leagueElement.findNext().text[:2]
+            return leagueElement.findNext().text[: 2]
 
     def division(self, html):
         leagueText = html.find('td', {'data-stat': 'lg_ID'}).text
@@ -193,5 +233,22 @@ class WSParser:
 
 
 
-sb = TeamStatsBuilder()
-x = sb.run()
+class WSParser:
+    def parse_ws_winner(self):
+        ws = WSScraper()
+        ws_team_list = []
+        winner = ws.ws_winners()
+        for team in winner:
+            ws_team_list.append(re.sub(' +', ' ', team.findNext().text))
+        return ws_team_list + ['Boston Red Sox']
+
+    def parse_ws_year(self):
+        ws = WSScraper()
+        ws_year_list = []
+        year = ws.ws_years()
+        for y in year:
+            ws_year_list.append(y.findNext().text[: 4])
+        return ws_year_list[0: 116]
+
+    def zip(self):
+        return zip(self.parse_ws_winner(), self.parse_ws_year())
