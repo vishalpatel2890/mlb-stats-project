@@ -14,5 +14,6 @@ session = Session()
 # Red_Sox_Defense = Defensive_Stats(team=Red_Sox, year=2018, losses=54, runs_allowed=647, earned_runs=608, era=3.75, strikeouts=1558, field_percent=.987)
 # WS_Winner_2018 = WS_Winners(year=2018, team=Red_Sox)
 
+
 session.add(Red_Sox)
 session.commit()
