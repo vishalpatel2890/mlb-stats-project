@@ -39,6 +39,11 @@ class DefensiveStats:
             stat_list = [(getattr(year, stat), year.year) for year in team_defensive_stats]
         return stat_list
 
+    def getDefensiveStatForEachTeamYear(self, stat, year):
+        year_stats = self.cd.getTeamsDefensiveStatsForYear(year)
+        given_stat_year = [[team.team.name, getattr(team, stat)] for team in year_stats]
+        return given_stat_year
+
 
 class OffensiveStats:
     def __init__(self):
@@ -75,7 +80,26 @@ class CleanData:
         offensive_stats_for_year = Offensive_Stats.query.filter(Offensive_Stats.year == year).all()
         return offensive_stats_for_year
 
+    def getTeamsDefensiveStatsForYear(self, year):
+        defensive_stats_for_year = Defensive_Stats.query.filter(Defensive_Stats.year == year).all()
+        return defensive_stats_for_year
+
     def getAllYearsWithValidWSWinner(self):
         ws_winners_with_team = WS_Winners.query.filter(WS_Winners.team_id).all()
         years = [winner.year for winner in ws_winners_with_team]
         return years
+
+dsp = DefensiveStats()
+osp = OffensiveStats()
+
+def runs(year):
+    runs_scored = osp.getOffensiveStatForEachTeamYear('runs_scored', year)[0]
+    runs_allowed = dsp.getDefensiveStatForEachTeamYear('runs_allowed', year)[0]
+    runs_list = [[x[0]]+[x[1]]+[y[1]] for x,y in zip(runs_scored, runs_allowed)]
+    return runs_list
+#test_year = runs(2017)
+
+def ws_winners_years():
+    ws_list = WS_Winners.query.filter(WS_Winners.team_id).all()
+    return ws_list
+ws_years = [x.year for x in ws_winners_years()][-40:-1]

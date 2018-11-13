@@ -12,7 +12,9 @@ server.config["SQLALCHEMY_ECHO"] = False
 db = SQLAlchemy(server)
 
 app = dash.Dash(__name__, server=server, url_base_pathname='/dashboard/', external_stylesheets=external_stylesheets)
+app2 = dash.Dash(__name__, server=server, url_base_pathname='/dash/', external_stylesheets=external_stylesheets)
 
 from dash_package.dashboard import *
 from dash_package.plots import *
 from dash_package.model import *
+from dash_package.app2 import *
