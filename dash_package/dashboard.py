@@ -3,6 +3,7 @@ from dash_package import app
 import dash_core_components as dcc
 import dash_html_components as html
 from dash_package.plots import *
+import plotly.graph_objs as go
 
 cd = CleanData()
 dr = DrawPlot()
@@ -13,33 +14,8 @@ year_stat_data, ws_winner_index = os.getOffensiveStatForEachTeamYear('wins', 201
 colors = ['rgba(204,204,204,1)' for team in year_stat_data]
 colors[ws_winner_index] = 'rgba(222,45,38,0.8)'
 
-
-# app.layout = html.Div(children=[
-#     html.H1(children='Hello Dash'),
-#
-#     html.Div(children='''
-#         Dash: A web application framework for Python.
-#     '''),
-#
-#     dcc.Graph(
-#         id='example-graph',
-#         figure={
-#             'data': [
-#                 {'x': [team[0] for team in year_stat_data]},
-#                 {'y': [team[1] for team in year_stat_data]},
-#             ],
-#             'layout': {
-#                 'title': 'Dash Data Visualization'
-#             }
-#         }
-#     )
-# ])
 app.layout = html.Div(children=[
-    html.H1(children='Hello Dash'),
-
-    html.Div(children='''
-        Dash: A web application framework for Python.
-    '''),
+    html.H1(children='Relationship Between Offensive Stats and World Series Winners'),
 
     dcc.Graph(id='offensive-stats'),
     dcc.Slider(
@@ -56,23 +32,10 @@ app.layout = html.Div(children=[
     dash.dependencies.Output('offensive-stats', 'figure'),
     [dash.dependencies.Input('year-slider', 'value')])
 def update_graph(selected_year):
-    # data = dr.createBarPlotForOffensiveStatYear('wins', selected_year)
-    traces = []
-    year_stat_data, ws_winner_index = os.getOffensiveStatForEachTeamYear('wins', selected_year)
-    colors = ['rgba(204,204,204,1)' for team in year_stat_data]
-    colors[ws_winner_index] = 'rgba(222,45,38,0.8)'
-    traces.append(go.Bar(
-            x=[team[0] for team in year_stat_data],
-            y=[team[1] for team in year_stat_data],
-            marker=dict(
-                color=colors)
-            ))
+    data = dr.createBarPlotForOffensiveStatYear('wins', selected_year)
+
 
     #offensive_stats_for_year = session.query(Offensive_Stats).filter(Offensive_Stats.year == year).all()
     return {
-        'data': traces,
-        'layout': go.Layout(
-            xaxis={'type': 'log', 'title': 'GDP Per Capita'},
-            yaxis={'title': 'Life Expectancy'}
-        )
+        'data': data
     }
