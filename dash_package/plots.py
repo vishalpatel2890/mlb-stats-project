@@ -28,7 +28,7 @@ class DefensiveStats:
         self.team_names = self.cd.getTeamNames()
 
     def getTeamDefensiveStats(self, team_name):
-        team_defensive_stats = Team.query.filter_by(Team.name == team_name)[0].defensive_stats
+        team_defensive_stats = Team.query.filter(Team.name == team_name)[0].defensive_stats
         return team_defensive_stats
 
     def getDefensiveStat(self, stat, team_name, year_start=None, year_end=None):
