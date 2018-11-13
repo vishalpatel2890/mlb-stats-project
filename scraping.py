@@ -6,7 +6,7 @@ import re
 from sqlalchemy.orm import sessionmaker
 import sqlalchemy
 
-engine = sqlalchemy.create_engine('sqlite:///baseball.db', echo=True)
+engine = sqlalchemy.create_engine('sqlite:///baseball.db')
 
 Base.metadata.create_all(engine)
 
@@ -62,15 +62,15 @@ class TeamStatsBuilder:
                 teams.append(new_team_instance)
         return teams
 
+
 class WSStatsBuilder:
     def run(self):
         wswins = []
         wsParser = WSParser()
         for team in wsParser.zip():
-            ws_instance = WS_Winners(year=team[1], name= team[0], team_id=session.query(Team).filter(Team.name == team[0]) or session.query(Team).filter(Team.name == 'default')])
+            ws_instance = WS_Winners(year=team[1], name=team[0], team_id=session.query(Team).filter(Team.name == team[0]) or session.query(Team).filter(Team.name == 'default'))
             wswins.append(ws_instance)
         return wswins
-
 
 
 class WSStatsBuilder:
@@ -111,6 +111,7 @@ class StatsScraper:
         soup = BeautifulSoup(pitching_request.content, 'html.parser')
         return soup.findAll('tr')
 
+
 class WSScraper:
     def ws_winners(self):
         ws_team_request = requests.get('https://www.topendsports.com/events/baseball-world-series/winning-teams.htm')
@@ -120,8 +121,7 @@ class WSScraper:
     def ws_years(self):
         ws_year_request = requests.get('https://en.wikipedia.org/wiki/List_of_World_Series_champions')
         soup = BeautifulSoup(ws_year_request.content, 'html.parser')
-        return soup.findAll('th', {'scope':'row'})
-
+        return soup.findAll('th', {'scope': 'row'})
 
 
 class WSScraper:
@@ -209,13 +209,14 @@ class StatParser:
     def parse_data_stat(self, html, string):
         return html.find('td', {'data-stat': string})
 
+
 class WSParser:
     def parse_ws_winner(self):
         ws = WSScraper()
         ws_team_list = []
         winner = ws.ws_winners()
         for team in winner:
-            ws_team_list.append(re.sub(' +',' ',team.findNext().text))
+            ws_team_list.append(re.sub(' +', ' ', team.findNext().text))
         return ws_team_list + ['Boston Red Sox']
 
     def parse_ws_year(self):
@@ -228,9 +229,6 @@ class WSParser:
 
     def zip(self):
         return zip(self.parse_ws_winner(), self.parse_ws_year())
-
-
-
 
 
 class WSParser:
