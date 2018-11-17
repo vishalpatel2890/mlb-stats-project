@@ -1,4 +1,4 @@
-from scraping import *
+from dash_package.scraping import *
 import sqlalchemy
 
 placeholder = Team(name='default')
