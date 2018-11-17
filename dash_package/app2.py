@@ -13,9 +13,10 @@ cd = CleanData()
 dr = DrawPlot()
 os = OffensiveStats()
 
-number_of_teams, ws_winner_index = os.getOffensiveStatForEachTeamYear('runs_scored', 2018)
-colors = ['rgba(204,204,204,1)' for team in number_of_teams]
-colors[ws_winner_index] = 'rgba(222,45,38,0.8)'
+def ws_winners_years():
+    ws_list = WS_Winners.query.filter(WS_Winners.team_id).all()
+    return ws_list
+ws_years = [x.year for x in ws_winners_years()][-40:-1]
 
 app2.layout = html.Div(children=[
     html.H1(children='Comparing Two Stats and World Series Winners'),
@@ -55,8 +56,3 @@ def update_graph(year, stat1, stat2):
     margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
     legend={'x': 0, 'y': 1},
     hovermode='closest')}
-
-
-
-# if __name__ == '__main__':
-#     app2.run_server(debug=True)

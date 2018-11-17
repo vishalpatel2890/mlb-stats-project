@@ -5,17 +5,24 @@ import dash_html_components as html
 from dash_package.plots import *
 import plotly.graph_objs as go
 
+#initalize CleanData, DrawPlot, Offensive Stats, class
 cd = CleanData()
 dr = DrawPlot()
 os = OffensiveStats()
 years = cd.getAllYearsWithValidWSWinner()[-30:-1]
+
+#list of offensive keys
 offensive_keys = [('Wins', 'wins'), ('Average Age', 'avg_age'), ('OPS', 'ops'), ('Home Runs', 'home_runs'),
                 ('Batting Average', 'batting_avg'), ('Runs Scored', 'runs_scored')]
+
+
 year_stat_data, ws_winner_index = os.getOffensiveStatForEachTeamYear('wins', 2018)
 colors = ['rgba(204,204,204,1)' for team in year_stat_data]
 colors[ws_winner_index] = 'rgba(222,45,38,0.8)'
 
+#add layout to dash
 app.layout = html.Div([
+    # tabs
     dcc.Tabs(id="tabs", children=[
         dcc.Tab(id='Tab 1', label='Offensive Stats', children=[
             html.H1(children='Relationship Between Offensive Stats and World Series Winners'),
@@ -36,19 +43,21 @@ app.layout = html.Div([
             ]),
         dcc.Tab(id='Tab 2', label='Defensive Stats', children=[
             html.H1(children='Relationship Between Offensive Stats and World Series Winners'),
-            
+
             ])
         ])
 ])
 
-
+# create callbacks to dropdowns and year slider
 @app.callback(
     dash.dependencies.Output('offensive-stats', 'figure'),
     [dash.dependencies.Input('year-slider', 'value'),
     dash.dependencies.Input('stat-selector', 'value')]
     )
 
+#function runs when callback is triggered with new input values
 def update_graph(selected_year, selected_stat):
+    #returns offensive plot 
     data = dr.createBarPlotForOffensiveStatYear(selected_stat, selected_year)
 
 
