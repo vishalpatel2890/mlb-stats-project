@@ -57,5 +57,7 @@ class WS_Winners(db.Model):
     team = db.relationship('Team', backref=db.backref('ws_winners', lazy=True))
 
 
+## create database and create all tables 
+## for flask-sqlalchemy in terminal or jupyter run db.create_all()
 #engine = create_engine('sqlite///:///mlb_stats.db', echo = True)
 # Base.metadata.create_all(engine)
