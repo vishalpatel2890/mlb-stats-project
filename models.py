@@ -1,0 +1,28 @@
+from dash_package import *
+
+class Game(db.Model):
+    __tablename__ = 'games'
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Text)
+    v_team_id = db.Column(db.Integer, db.ForeignKey('teams.id'))
+    v_team = db.relationship('Team', foreign_keys=[v_team_id], backref=db.backref('away_games', lazy=True))
+    v_team_league = db.Column(db.Text)
+    h_team_id = db.Column(db.Integer, db.ForeignKey('teams.id'))
+    h_team = db.relationship('Team', foreign_keys=[h_team_id], backref=db.backref('home_games', lazy=True))
+    h_team_league = db.Column(db.Text)
+    v_score = db.Column(db.Integer)
+    h_score = db.Column(db.Integer)
+    park = db.Column(db.Integer)
+    v_line_score = db.Column(db.Text)
+    h_line_score = db.Column(db.Text)
+    v_at_bats = db.Column(db.Integer)
+    h_at_bats = db.Column(db.Integer)
+    v_hits = db.Column(db.Integer)
+    h_hits = db.Column(db.Integer)
+    v_home_runs = db.Column(db.Integer)
+    h_home_runs = db.Column(db.Integer)
+    w_pitcher_id = db.Column(db.Integer)
+    w_pitcher_name = db.Column(db.Text)
+    l_pitcher_id = db.Column(db.Integer)
+    l_pitcher_name = db.Column(db.Text)
+    acquisition_info = db.Column(db.Text)

@@ -12,6 +12,7 @@ class Team(db.Model):
     __tablename__ = 'teams'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Text)
+    shortcode = db.Column(db.Text)
     # remove for Flask SQL Alchemy
 # offensive_stats = db.relationship('Offensive_Stats',  backref=db.backref('team', lazy=True))
 # defensive_stats = db.relationship('Defensive_Stats',  backref=db.backref('team', lazy=True))
