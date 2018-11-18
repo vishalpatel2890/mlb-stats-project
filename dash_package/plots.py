@@ -59,11 +59,15 @@ class DrawPlot:
 
     #returns scatter plot comparing any two stats for given year for all mlb teams
     def createScatterPlotForStatYear(self, year, stat1, stat2):
+        #first drop down statistics query
         number_of_teams = self.key_find(stat1, year)
+        #second drop down statistics query
         number_of_teams2 = self.key_find(stat2, year)
+        #identify world series winner by year
         ws_winner = WS_Winners.query.filter(WS_Winners.year == year)[0].team.name
         index = [(i, el.index(ws_winner)) for i, el in enumerate(number_of_teams) if ws_winner in el][0][0]
-
+        #list of colors matching length of # of teams
+        # replace color matching index of ws winner
         colors = ['rgba(204,204,204,1)' for team in number_of_teams]
         colors[index] = 'rgba(222,45,38,0.8)'
         traces = []
