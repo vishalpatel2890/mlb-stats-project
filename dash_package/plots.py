@@ -26,7 +26,7 @@ class DrawPlot:
     def createBarPlotForOffensiveStatYear(self, stat, year):
         year_stat_data, ws_winner_index = self.os.getOffensiveStatForEachTeamYear(stat, year)
         #list of colors matching length of # of teams
-        # replace color matching index of ws winner 
+        # replace color matching index of ws winner
         colors = ['rgba(204,204,204,1)' for team in year_stat_data]
         colors[ws_winner_index] = 'rgba(222,45,38,0.8)'
         data = [go.Bar(
@@ -37,6 +37,19 @@ class DrawPlot:
                 )]
         return data
 
+    def createBarPlotForDefensiveStatYear(self, stat, year):
+        year_stat_data, ws_winner_index = self.ds.getDefensiveStatForEachTeamYear(stat, year)
+        #list of colors matching length of # of teams
+        # replace color matching index of ws winner
+        colors = ['rgba(204,204,204,1)' for team in year_stat_data]
+        colors[ws_winner_index] = 'rgba(222,45,38,0.8)'
+        data = [go.Bar(
+                x=[team[0] for team in year_stat_data],
+                y=[team[1] for team in year_stat_data],
+                marker=dict(
+                    color=colors)
+                )]
+        return data
     #returns correct list of statistics depending if stat is offensive or defensive
     def key_find(self, stat, year):
         if stat in self.def_keys:
@@ -151,5 +164,5 @@ class CleanData:
     #some years there is no corressponding team object because of team name/franchise changes - needs to be fixed
     def getAllYearsWithValidWSWinner(self):
         ws_winners_with_team = WS_Winners.query.filter(WS_Winners.team_id).all()
-        years = [winner.year for winner in ws_winners_with_team]
+        years = sorted([winner.year for winner in ws_winners_with_team])
         return years
