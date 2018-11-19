@@ -17,7 +17,11 @@ If you follow baseball at all you know baseball is all about stats and advanced 
 
 We started by finding some data. This was an easy task with baseball stats being plentiful on the internet and often times in a very easily digestable format (programatically speaking). We started with a test scrape of Baseball Reference(https://www.baseball-reference.com/) and quickly found the data we would need to get started. It was decided that we wanted to split stats into two tables: offensive and defensive stats and with Beautiful Soup we made quick work of grabbing this data for all current teams for all years dating back to 1906. We then populated this data into our SQLite database creating four tables including Teams, Offensive Stats, Defensive Stats, and World Series Winners. Using SQL Alchemy we queried our database and fed them into Dash to visualize our data. Below are the graphs we created. The team in red each year is the world series winner in order to easily see correlation between stats and/or trends and world series wins.  
 
+![Offensive Stats](https://github.com/vishalpatel2890/mlb-stats-project/blob/master/Screen%20Shot%202018-11-19%20at%208.37.48%20AM.png)
 
+![Defensive Stats](https://github.com/vishalpatel2890/mlb-stats-project/blob/master/Screen%20Shot%202018-11-19%20at%208.27.01%20AM.png)
+      
+![Comparing Two Stats](https://github.com/vishalpatel2890/mlb-stats-project/blob/master/Screen%20Shot%202018-11-19%20at%208.28.35%20AM.png)
 
 
 
