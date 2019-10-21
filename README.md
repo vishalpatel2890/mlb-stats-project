@@ -4,7 +4,7 @@ by Vishal Patel and Scott Bronder
 If you follow baseball at all you know baseball is all about stats and advanced statistics is playing a vital role in the evolution of the game. As a viewer you really only get presented the end result during broadcast with little to no insight on how that data was collected. Being fans of baseball we decided to take a deeper dive into some of baseballs data and create some comparisons of our own. 
 
 
-## Requirements
+## Requirements 
 		- Flask (for the website) 
 		- SQL Alchemy (for ORM) 
 		- Dash (for graphing)
